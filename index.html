@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>เกมลีน — เลือกเล่น 3 เกม</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#FBF3E7;
+    --bg2:#F3E6CF;
+    --ink:#2B2E4A;
+    --card-shadow: 0 6px 0 rgba(43,46,74,0.14);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{
+    margin:0; padding:0; min-height:100%;
+    background: radial-gradient(ellipse at top left, var(--bg2) 0%, var(--bg1) 60%);
+    font-family:'Nunito', sans-serif;
+    color:var(--ink);
+  }
+  h1,h2,h3{ font-family:'Fredoka', sans-serif; }
+  #app{
+    max-width:480px; margin:0 auto; min-height:100vh;
+    padding:env(safe-area-inset-top) 18px calc(env(safe-area-inset-bottom) + 24px);
+    display:flex; flex-direction:column;
+  }
+  .hero{ text-align:center; margin:28px 0 6px; }
+  .hero-emoji{ font-size:3.2rem; }
+  h1.title{ font-size:1.6rem; margin:6px 0 4px; color:#8B4F26; }
+  p.subtitle{ margin:0 0 22px; color:#6b5647; font-size:0.95rem; }
+
+  .game-card{
+    display:block; text-decoration:none; color:inherit;
+    background:#fff; border-radius:22px; padding:18px;
+    box-shadow:var(--card-shadow); margin-bottom:16px;
+    border:2px solid transparent;
+    transition:transform .05s;
+  }
+  .game-card:active{ transform:translateY(3px); box-shadow:0 3px 0 rgba(43,46,74,0.14); }
+
+  .game-top{ display:flex; align-items:center; gap:14px; margin-bottom:10px; }
+  .game-emoji{ font-size:2.6rem; flex-shrink:0; }
+  .game-title{ font-family:'Fredoka'; font-size:1.15rem; margin:0; }
+  .game-focus{
+    display:inline-block; font-size:0.7rem; font-family:'Fredoka'; font-weight:600;
+    padding:3px 10px; border-radius:20px; margin-top:3px;
+  }
+  .game-desc{ font-size:0.88rem; line-height:1.5; color:#5c5a52; margin:0 0 12px; }
+
+  .play-btn{
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    font-family:'Fredoka'; font-weight:600; font-size:0.95rem;
+    border-radius:14px; padding:12px; color:#fff;
+  }
+
+  .bakery{ border-color:#F3E4C8; }
+  .bakery .game-focus{ background:#FBEFD9; color:#8B4F26; }
+  .bakery .play-btn{ background:#C97C3D; box-shadow:0 4px 0 #8B4F26; }
+
+  .warehouse{ border-color:#DCEEEC; }
+  .warehouse .game-focus{ background:#E4F1F0; color:#1E4B48; }
+  .warehouse .play-btn{ background:#2F6E6A; box-shadow:0 4px 0 #1E4B48; }
+
+  .print{ border-color:#E1E6F7; }
+  .print .game-focus{ background:#EAEDFA; color:#31386E; }
+  .print .play-btn{ background:#4A55A2; box-shadow:0 4px 0 #31386E; }
+
+  .footer-note{
+    text-align:center; font-size:0.78rem; color:#8a8578; margin-top:8px;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="hero">
+    <div class="hero-emoji">🎮</div>
+    <h1 class="title">เกมลีน 3 เกม</h1>
+    <p class="subtitle">เลือกเกมที่อยากเล่น แล้วแตะ "เล่นเกม" ได้เลย</p>
+  </div>
+
+  <a class="game-card bakery" href="https://momi09529-bot.github.io/zero-defect-bakery/zero-defect-bakery.html">
+    <div class="game-top">
+      <div class="game-emoji">🥐</div>
+      <div>
+        <div class="game-title">Zero Defect Bakery</div>
+        <span class="game-focus">Quality at the Source</span>
+      </div>
+    </div>
+    <p class="game-desc">ทำขนม 6 รอบ ตวงวัตถุดิบ อบ ตกแต่ง และตัดสินใจว่าจะตรวจสอบคุณภาพก่อนส่งหรือส่งเลย ลดของเสียให้ได้มากที่สุด</p>
+    <div class="play-btn">▶ เล่นเกม</div>
+  </a>
+
+  <a class="game-card warehouse" href="https://momi09529-bot.github.io/-5s-warehouse-/5s-warehouse.html">
+    <div class="game-top">
+      <div class="game-emoji">📦</div>
+      <div>
+        <div class="game-title">5S Warehouse</div>
+        <span class="game-focus">5ส & ลดเวลาค้นหา</span>
+      </div>
+    </div>
+    <p class="game-desc">หาสินค้าในคลังที่กระจัดกระจายให้ครบก่อนเวลาหมด แล้วลงทุนจัดระเบียบคลังตามหลัก 5ส เพื่อให้รอบถัดไปเร็วขึ้น</p>
+    <div class="play-btn">▶ เล่นเกม</div>
+  </a>
+
+  <a class="game-card print" href="https://momi09529-bot.github.io/-fast-print/fast-print.html">
+    <div class="game-top">
+      <div class="game-emoji">🖨️</div>
+      <div>
+        <div class="game-title">Fast Print</div>
+        <span class="game-focus">Pull System & Flow</span>
+      </div>
+    </div>
+    <p class="game-desc">บริหารสายงานพิมพ์ด่วน 4 สถานี ให้งานไหลลื่นไม่ติดขัด จัดการคอขวดและลดของเสียจากการรอคอย</p>
+    <div class="play-btn">▶ เล่นเกม</div>
+  </a>
+
+  <p class="footer-note">สาขาเทคโนโลยี · แนวคิดลีน 🍃</p>
+</div>
+</body>
+</html>

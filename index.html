@@ -2,268 +2,395 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lean Factory Simulator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>เกมลีน — เลือกเล่น 4 เกม</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;700;800&family=Anuphan:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
-
   :root{
-    --bg: #16181c;
-    --bg-panel: #1e2126;
-    --steel: #2a2e35;
-    --steel-line: #3a3f47;
-    --safety: #f5a623;
-    --safety-dim: #7a5a1f;
-    --ok: #4caf7d;
-    --warn: #e5484d;
-    --text: #e8e6e1;
-    --text-dim: #8b8d92;
-    --paint: #4a90d9;
+    --bg1:#FBF3E7;
+    --bg2:#F3E6CF;
+    --ink:#2B2E4A;
+    --card-shadow: 0 6px 0 rgba(43,46,74,0.14);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{
+    margin:0; padding:0; min-height:100%;
+    background: radial-gradient(ellipse at top left, var(--bg2) 0%, var(--bg1) 60%);
+    font-family:'Nunito', sans-serif;
+    color:var(--ink);
+  }
+  h1,h2,h3{ font-family:'Fredoka', sans-serif; }
+  #app{
+    max-width:480px; margin:0 auto; min-height:100vh;
+    padding:env(safe-area-inset-top) 18px calc(env(safe-area-inset-bottom) + 24px);
+    display:flex; flex-direction:column;
+  }
+  .hero{ text-align:center; margin:28px 0 6px; }
+  .hero-emoji{ font-size:3.2rem; }
+  h1.title{ font-size:1.6rem; margin:6px 0 4px; color:#8B4F26; }
+  p.subtitle{ margin:0 0 22px; color:#6b5647; font-size:0.95rem; }
+
+  .game-card{
+    display:block; text-decoration:none; color:inherit;
+    background:#fff; border-radius:22px; padding:18px;
+    box-shadow:var(--card-shadow); margin-bottom:16px;
+    border:2px solid transparent;
+    transition:transform .05s;
+    cursor:pointer;
+  }
+  .game-card:active{ transform:translateY(3px); box-shadow:0 3px 0 rgba(43,46,74,0.14); }
+
+  .game-top{ display:flex; align-items:center; gap:14px; margin-bottom:10px; }
+  .game-emoji{ font-size:2.6rem; flex-shrink:0; }
+  .game-title{ font-family:'Fredoka'; font-size:1.15rem; margin:0; }
+  .game-focus{
+    display:inline-block; font-size:0.7rem; font-family:'Fredoka'; font-weight:600;
+    padding:3px 10px; border-radius:20px; margin-top:3px;
+  }
+  .game-desc{ font-size:0.88rem; line-height:1.5; color:#5c5a52; margin:0 0 12px; }
+
+  .play-btn{
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    font-family:'Fredoka'; font-weight:600; font-size:0.95rem;
+    border-radius:14px; padding:12px; color:#fff;
   }
 
-  *{ box-sizing: border-box; }
-  html,body{ margin:0; padding:0; }
-  body{
-    background: var(--bg);
+  .bakery{ border-color:#F3E4C8; }
+  .bakery .game-focus{ background:#FBEFD9; color:#8B4F26; }
+  .bakery .play-btn{ background:#C97C3D; box-shadow:0 4px 0 #8B4F26; }
+
+  .warehouse{ border-color:#DCEEEC; }
+  .warehouse .game-focus{ background:#E4F1F0; color:#1E4B48; }
+  .warehouse .play-btn{ background:#2F6E6A; box-shadow:0 4px 0 #1E4B48; }
+
+  .print{ border-color:#E1E6F7; }
+  .print .game-focus{ background:#EAEDFA; color:#31386E; }
+  .print .play-btn{ background:#4A55A2; box-shadow:0 4px 0 #31386E; }
+
+  .factory{ border-color:#F5DCB8; }
+  .factory .game-focus{ background:#FCEFDA; color:#7A5A1F; }
+  .factory .play-btn{ background:#D98B2B; box-shadow:0 4px 0 #7A5A1F; }
+
+  .footer-note{
+    text-align:center; font-size:0.78rem; color:#8a8578; margin-top:8px;
+  }
+
+  /* ================= LEAN FACTORY SIMULATOR (embedded) ================= */
+  #lean-game{
+    scroll-margin-top: 10px;
+    margin-top: 10px;
+    border-radius: 26px;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+  }
+  .lfs{
+    --lfs-bg: #16181c;
+    --lfs-bg-panel: #1e2126;
+    --lfs-steel: #2a2e35;
+    --lfs-steel-line: #3a3f47;
+    --lfs-safety: #f5a623;
+    --lfs-safety-dim: #7a5a1f;
+    --lfs-ok: #4caf7d;
+    --lfs-warn: #e5484d;
+    --lfs-text: #e8e6e1;
+    --lfs-text-dim: #8b8d92;
+    --lfs-paint: #4a90d9;
+
+    background: var(--lfs-bg);
     background-image:
       repeating-linear-gradient(135deg, rgba(245,166,35,0.03) 0px, rgba(245,166,35,0.03) 2px, transparent 2px, transparent 14px);
-    color: var(--text);
+    color: var(--lfs-text);
     font-family: 'Anuphan', sans-serif;
-    min-height: 100vh;
-    display:flex;
-    justify-content:center;
-    padding: 28px 16px 60px;
+    padding: 28px 18px 40px;
   }
-
-  .wrap{ width:100%; max-width: 760px; }
-
-  /* ---- header ---- */
-  .hazard{
+  .lfs .back-link{
+    display:inline-flex; align-items:center; gap:6px;
+    color: var(--lfs-safety); text-decoration:none;
+    font-family:'Space Mono',monospace; font-size:12px; letter-spacing:1px;
+    margin-bottom: 16px;
+  }
+  .lfs .hazard{
     height: 8px;
-    background: repeating-linear-gradient(135deg, var(--safety) 0 14px, #16181c 14px 28px);
+    background: repeating-linear-gradient(135deg, var(--lfs-safety) 0 14px, var(--lfs-bg) 14px 28px);
     border-radius: 3px;
     margin-bottom: 18px;
     opacity: 0.85;
   }
-  header{ margin-bottom: 22px; }
-  .eyebrow{
+  .lfs header{ margin-bottom: 22px; }
+  .lfs .eyebrow{
     font-family:'Space Mono', monospace;
     font-size: 11px;
     letter-spacing: 2.5px;
-    color: var(--safety);
+    color: var(--lfs-safety);
     text-transform: uppercase;
     margin-bottom: 6px;
   }
-  h1{
-    font-size: 30px;
+  .lfs h2.lfs-title{
+    font-family:'Anuphan',sans-serif;
+    font-size: 26px;
     font-weight: 800;
     margin: 0 0 6px;
     letter-spacing: -0.3px;
+    color: var(--lfs-text);
   }
-  .sub{ color: var(--text-dim); font-size: 14.5px; line-height:1.6; max-width: 58ch;}
-  .sub b{ color: var(--text); font-weight:600; }
+  .lfs .sub{ color: var(--lfs-text-dim); font-size: 14px; line-height:1.6; }
+  .lfs .sub b{ color: var(--lfs-text); font-weight:600; }
 
-  /* ---- order status bar ---- */
-  .orderbar{
-    display:flex; align-items:center; justify-content:space-between;
-    background: var(--bg-panel);
-    border: 1px solid var(--steel-line);
+  .lfs .orderbar{
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
+    background: var(--lfs-bg-panel);
+    border: 1px solid var(--lfs-steel-line);
     border-radius: 10px;
-    padding: 14px 18px;
+    padding: 14px 16px;
     margin: 20px 0 22px;
   }
-  .orderbar .label{ font-size:12.5px; color:var(--text-dim); margin-bottom:4px;}
-  .orderbar .val{ font-family:'Space Mono',monospace; font-size:22px; font-weight:700; }
-  .orderbar .val.materials{ color: var(--text); }
-  .orderbar .val.delivered{ color: var(--ok); }
-  .orderbar .val.waste{ color: var(--warn); }
+  .lfs .orderbar .label{ font-size:11.5px; color:var(--lfs-text-dim); margin-bottom:4px;}
+  .lfs .orderbar .val{ font-family:'Space Mono',monospace; font-size:20px; font-weight:700; }
+  .lfs .orderbar .val.materials{ color: var(--lfs-text); }
+  .lfs .orderbar .val.delivered{ color: var(--lfs-ok); }
+  .lfs .orderbar .val.waste{ color: var(--lfs-warn); }
 
-  /* ---- pipeline ---- */
-  .pipeline{
+  .lfs .pipeline{
     display:grid;
     grid-template-columns: 1fr auto 1fr auto 1fr;
     align-items:center;
-    gap: 8px;
+    gap: 6px;
     margin-bottom: 22px;
   }
-  .station{
-    background: var(--bg-panel);
-    border: 1px solid var(--steel-line);
+  .lfs .station{
+    background: var(--lfs-bg-panel);
+    border: 1px solid var(--lfs-steel-line);
     border-radius: 10px;
-    padding: 16px 12px;
+    padding: 14px 8px;
     text-align:center;
-    position:relative;
     transition: box-shadow .3s, border-color .3s;
   }
-  .station .num{
+  .lfs .station .num{
     font-family:'Space Mono',monospace;
-    font-size: 26px;
+    font-size: 22px;
     font-weight:700;
   }
-  .station .name{ font-size:12px; color:var(--text-dim); margin-top:4px; }
-  .station .tag{
+  .lfs .station .name{ font-size:11px; color:var(--lfs-text-dim); margin-top:4px; }
+  .lfs .station .tag{
     font-family:'Space Mono',monospace;
-    font-size: 10px;
+    font-size: 9px;
     letter-spacing:1px;
-    color: var(--safety-dim);
+    color: var(--lfs-safety-dim);
     text-transform:uppercase;
     margin-bottom: 6px;
   }
-  .station.hot{ border-color: var(--safety); box-shadow: 0 0 0 1px var(--safety) inset; }
-  .arrow{ color: var(--steel-line); font-size: 20px; }
+  .lfs .station.hot{ border-color: var(--lfs-safety); box-shadow: 0 0 0 1px var(--lfs-safety) inset; }
+  .lfs .arrow{ color: var(--lfs-steel-line); font-size: 18px; }
 
-  /* ---- actions ---- */
-  .actions{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px; }
-  @media (max-width:520px){ .actions{ grid-template-columns: 1fr; } }
-  button.act{
-    background: var(--steel);
-    border: 1px solid var(--steel-line);
-    color: var(--text);
+  .lfs .actions{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px; }
+  .lfs button.act{
+    background: var(--lfs-steel);
+    border: 1px solid var(--lfs-steel-line);
+    color: var(--lfs-text);
     border-radius: 9px;
-    padding: 14px 16px;
+    padding: 13px 14px;
     text-align:left;
     font-family:'Anuphan',sans-serif;
-    font-size: 14.5px;
+    font-size: 13.5px;
     cursor:pointer;
     transition: transform .12s, border-color .12s, background .12s;
     display:flex;
     flex-direction:column;
     gap: 3px;
   }
-  button.act .t{ font-weight:700; }
-  button.act .d{ font-size: 12px; color: var(--text-dim); }
-  button.act:hover:not(:disabled){ border-color: var(--safety); transform: translateY(-1px); }
-  button.act:active:not(:disabled){ transform: translateY(0); }
-  button.act:disabled{ opacity: 0.38; cursor:not-allowed; }
-  button.act.hint{ background: rgba(74,144,217,0.08); border-color: rgba(74,144,217,0.35); }
-  button.act.hint .t{ color: var(--paint); }
+  .lfs button.act .t{ font-weight:700; }
+  .lfs button.act .d{ font-size: 11.5px; color: var(--lfs-text-dim); }
+  .lfs button.act:hover:not(:disabled){ border-color: var(--lfs-safety); transform: translateY(-1px); }
+  .lfs button.act:disabled{ opacity: 0.38; cursor:not-allowed; }
+  .lfs button.act.hint{ background: rgba(74,144,217,0.08); border-color: rgba(74,144,217,0.35); }
+  .lfs button.act.hint .t{ color: var(--lfs-paint); }
 
-  /* ---- log ---- */
-  .logpanel{
+  .lfs .logpanel{
     background: #101216;
-    border: 1px solid var(--steel-line);
+    border: 1px solid var(--lfs-steel-line);
     border-radius: 10px;
     padding: 14px 16px;
     height: 220px;
     overflow-y:auto;
     font-family:'Space Mono',monospace;
-    font-size: 12.5px;
+    font-size: 12px;
     line-height: 1.7;
   }
-  .logpanel .row{ color: var(--text-dim); margin-bottom:2px; white-space:pre-wrap; }
-  .logpanel .row.hi{ color: var(--text); }
-  .logpanel .row.ok{ color: var(--ok); }
-  .logpanel .row.warn{ color: var(--warn); }
-  .logpanel .row.hint{ color: var(--paint); }
-  .logpanel .row.step{ color: var(--safety); font-weight:700; margin-top:8px; }
+  .lfs .logpanel .row{ color: var(--lfs-text-dim); margin-bottom:2px; white-space:pre-wrap; }
+  .lfs .logpanel .row.hi{ color: var(--lfs-text); }
+  .lfs .logpanel .row.ok{ color: var(--lfs-ok); }
+  .lfs .logpanel .row.warn{ color: var(--lfs-warn); }
+  .lfs .logpanel .row.hint{ color: var(--lfs-paint); }
+  .lfs .logpanel .row.step{ color: var(--lfs-safety); font-weight:700; margin-top:8px; }
 
-  /* ---- result ---- */
-  .result{
+  .lfs .result{
     margin-top: 22px;
-    background: var(--bg-panel);
-    border: 1px solid var(--safety);
+    background: var(--lfs-bg-panel);
+    border: 1px solid var(--lfs-safety);
     border-radius: 10px;
     padding: 22px;
     text-align:center;
     display:none;
   }
-  .result.show{ display:block; }
-  .result .medal{ font-size: 34px; margin-bottom: 8px; }
-  .result h2{ margin: 0 0 8px; font-size: 20px; }
-  .result p{ color: var(--text-dim); font-size: 13.5px; line-height:1.6; margin: 0 0 16px; }
-  .result button{
-    background: var(--safety);
+  .lfs .result.show{ display:block; }
+  .lfs .result .medal{ font-size: 34px; margin-bottom: 8px; }
+  .lfs .result h3{ margin: 0 0 8px; font-size: 18px; color: var(--lfs-text); }
+  .lfs .result p{ color: var(--lfs-text-dim); font-size: 13px; line-height:1.6; margin: 0 0 16px; }
+  .lfs .result button{
+    background: var(--lfs-safety);
     color: #16181c;
     border:none;
     border-radius: 8px;
     padding: 10px 20px;
     font-weight:700;
-    font-size: 13.5px;
+    font-size: 13px;
     cursor:pointer;
     font-family:'Anuphan',sans-serif;
   }
 
-  footer{ text-align:center; color: var(--text-dim); font-size:11.5px; margin-top: 26px; font-family:'Space Mono',monospace; letter-spacing: 0.5px;}
+  .lfs footer{ text-align:center; color: var(--lfs-text-dim); font-size:11px; margin-top: 26px; font-family:'Space Mono',monospace; letter-spacing: 0.5px;}
 </style>
 </head>
 <body>
-<div class="wrap">
-
-  <div class="hazard"></div>
-  <header>
-    <div class="eyebrow">TOYOTA PRODUCTION SYSTEM · เกมจำลอง</div>
-    <h1>Lean Factory Simulator</h1>
-    <div class="sub">ส่งมอบรถยนต์ตามคำสั่งซื้อให้ครบ โดยไม่มี <b>Waste</b> เหลือทิ้ง — ใช้แนวคิด <b>Just-in-Time</b>: สั่งเท่าไรทำเท่านั้น อย่าสะสม Stock เกินความจำเป็น</div>
-  </header>
-
-  <div class="orderbar">
-    <div>
-      <div class="label">คำสั่งซื้อวันนี้</div>
-      <div class="val" id="orderVal">5 คัน</div>
-    </div>
-    <div>
-      <div class="label">อะไหล่คงเหลือ</div>
-      <div class="val materials" id="materialsVal">10</div>
-    </div>
-    <div>
-      <div class="label">ส่งมอบแล้ว</div>
-      <div class="val delivered" id="deliveredVal">0 / 5</div>
-    </div>
-    <div>
-      <div class="label">Waste เกิดขึ้น</div>
-      <div class="val waste" id="wasteVal">0</div>
-    </div>
+<div id="app">
+  <div class="hero">
+    <div class="hero-emoji">🎮</div>
+    <h1 class="title">เกมลีน 4 เกม</h1>
+    <p class="subtitle">เลือกเกมที่อยากเล่น แล้วแตะ "เล่นเกม" ได้เลย</p>
   </div>
 
-  <div class="pipeline">
-    <div class="station" id="stEngine">
-      <div class="tag">Station 1</div>
-      <div class="num" id="engineNum">0</div>
-      <div class="name">รอพ่นสี</div>
+  <a class="game-card bakery" href="https://momi09529-bot.github.io/zero-defect-bakery/zero-defect-bakery.html">
+    <div class="game-top">
+      <div class="game-emoji">🥐</div>
+      <div>
+        <div class="game-title">Zero Defect Bakery</div>
+        <span class="game-focus">Quality at the Source</span>
+      </div>
     </div>
-    <div class="arrow">→</div>
-    <div class="station" id="stPaint">
-      <div class="tag">Station 2</div>
-      <div class="num" id="paintNum">0</div>
-      <div class="name">รอใส่ล้อ</div>
+    <p class="game-desc">ทำขนม 6 รอบ ตวงวัตถุดิบ อบ ตกแต่ง และตัดสินใจว่าจะตรวจสอบคุณภาพก่อนส่งหรือส่งเลย ลดของเสียให้ได้มากที่สุด</p>
+    <div class="play-btn">▶ เล่นเกม</div>
+  </a>
+
+  <a class="game-card warehouse" href="https://momi09529-bot.github.io/-5s-warehouse-/5s-warehouse.html">
+    <div class="game-top">
+      <div class="game-emoji">📦</div>
+      <div>
+        <div class="game-title">5S Warehouse</div>
+        <span class="game-focus">5ส & ลดเวลาค้นหา</span>
+      </div>
     </div>
-    <div class="arrow">→</div>
-    <div class="station" id="stDeliver">
-      <div class="tag">Station 3</div>
-      <div class="num">🚗</div>
-      <div class="name">ส่งมอบลูกค้า</div>
+    <p class="game-desc">หาสินค้าในคลังที่กระจัดกระจายให้ครบก่อนเวลาหมด แล้วลงทุนจัดระเบียบคลังตามหลัก 5ส เพื่อให้รอบถัดไปเร็วขึ้น</p>
+    <div class="play-btn">▶ เล่นเกม</div>
+  </a>
+
+  <a class="game-card print" href="https://momi09529-bot.github.io/-fast-print/fast-print.html">
+    <div class="game-top">
+      <div class="game-emoji">🖨️</div>
+      <div>
+        <div class="game-title">Fast Print</div>
+        <span class="game-focus">Pull System & Flow</span>
+      </div>
     </div>
+    <p class="game-desc">บริหารสายงานพิมพ์ด่วน 4 สถานี ให้งานไหลลื่นไม่ติดขัด จัดการคอขวดและลดของเสียจากการรอคอย</p>
+    <div class="play-btn">▶ เล่นเกม</div>
+  </a>
+
+  <a class="game-card factory" href="#lean-game">
+    <div class="game-top">
+      <div class="game-emoji">🚗</div>
+      <div>
+        <div class="game-title">Lean Factory Simulator</div>
+        <span class="game-focus">Just-in-Time & Pull System</span>
+      </div>
+    </div>
+    <p class="game-desc">คุมสายการผลิตรถยนต์ 3 สถานี ส่งมอบตามคำสั่งซื้อให้ครบโดยไม่มี Overproduction เหลือทิ้ง</p>
+    <div class="play-btn">▶ เล่นเกม</div>
+  </a>
+
+  <p class="footer-note">สาขาเทคโนโลยี · แนวคิดลีน 🍃</p>
+</div>
+
+<!-- ================= LEAN FACTORY SIMULATOR (embedded section) ================= -->
+<div id="lean-game" class="lfs">
+  <div class="wrap">
+    <a class="back-link" href="#app">← กลับไปหน้าเลือกเกม</a>
+    <div class="hazard"></div>
+    <header>
+      <div class="eyebrow">TOYOTA PRODUCTION SYSTEM · เกมจำลอง</div>
+      <h2 class="lfs-title">Lean Factory Simulator</h2>
+      <div class="sub">ส่งมอบรถยนต์ตามคำสั่งซื้อให้ครบ โดยไม่มี <b>Waste</b> เหลือทิ้ง — ใช้แนวคิด <b>Just-in-Time</b>: สั่งเท่าไรทำเท่านั้น อย่าสะสม Stock เกินความจำเป็น</div>
+    </header>
+
+    <div class="orderbar">
+      <div>
+        <div class="label">คำสั่งซื้อวันนี้</div>
+        <div class="val" id="orderVal">5 คัน</div>
+      </div>
+      <div>
+        <div class="label">อะไหล่คงเหลือ</div>
+        <div class="val materials" id="materialsVal">10</div>
+      </div>
+      <div>
+        <div class="label">ส่งมอบแล้ว</div>
+        <div class="val delivered" id="deliveredVal">0 / 5</div>
+      </div>
+      <div>
+        <div class="label">Waste เกิดขึ้น</div>
+        <div class="val waste" id="wasteVal">0</div>
+      </div>
+    </div>
+
+    <div class="pipeline">
+      <div class="station" id="stEngine">
+        <div class="tag">Station 1</div>
+        <div class="num" id="engineNum">0</div>
+        <div class="name">รอพ่นสี</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="station" id="stPaint">
+        <div class="tag">Station 2</div>
+        <div class="num" id="paintNum">0</div>
+        <div class="name">รอใส่ล้อ</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="station" id="stDeliver">
+        <div class="tag">Station 3</div>
+        <div class="num">🚗</div>
+        <div class="name">ส่งมอบลูกค้า</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="act" id="btn1">
+        <span class="t">1 · ประกอบเครื่องยนต์</span>
+        <span class="d">ใช้อะไหล่ 1 ชิ้น → เข้า Station 1</span>
+      </button>
+      <button class="act" id="btn2">
+        <span class="t">2 · พ่นสีรถยนต์</span>
+        <span class="d">ต้องมีรถจาก Station 1</span>
+      </button>
+      <button class="act" id="btn3">
+        <span class="t">3 · ใส่ล้อ &amp; ส่งมอบ</span>
+        <span class="d">ต้องมีรถจาก Station 2</span>
+      </button>
+      <button class="act hint" id="btn4">
+        <span class="t">4 · Kaizen Hint</span>
+        <span class="d">ตรวจสอบระบบ Pull System</span>
+      </button>
+    </div>
+
+    <div class="logpanel" id="log"></div>
+
+    <div class="result" id="result">
+      <div class="medal" id="medal"></div>
+      <h3 id="resultTitle"></h3>
+      <p id="resultBody"></p>
+      <button id="restartBtn">เริ่มใหม่</button>
+    </div>
+
+    <footer>ROUND <span id="stepFoot">1</span> · PULL, DON'T PUSH</footer>
   </div>
-
-  <div class="actions">
-    <button class="act" id="btn1">
-      <span class="t">1 · ประกอบเครื่องยนต์</span>
-      <span class="d">ใช้อะไหล่ 1 ชิ้น → เข้า Station 1</span>
-    </button>
-    <button class="act" id="btn2">
-      <span class="t">2 · พ่นสีรถยนต์</span>
-      <span class="d">ต้องมีรถจาก Station 1</span>
-    </button>
-    <button class="act" id="btn3">
-      <span class="t">3 · ใส่ล้อ &amp; ส่งมอบ</span>
-      <span class="d">ต้องมีรถจาก Station 2</span>
-    </button>
-    <button class="act hint" id="btn4">
-      <span class="t">4 · Kaizen Hint</span>
-      <span class="d">ตรวจสอบระบบ Pull System</span>
-    </button>
-  </div>
-
-  <div class="logpanel" id="log"></div>
-
-  <div class="result" id="result">
-    <div class="medal" id="medal"></div>
-    <h2 id="resultTitle"></h2>
-    <p id="resultBody"></p>
-    <button id="restartBtn">เริ่มใหม่</button>
-  </div>
-
-  <footer>ROUND <span id="stepFoot">1</span> · PULL, DON'T PUSH</footer>
 </div>
 
 <script>
